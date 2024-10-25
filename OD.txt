@@ -1,0 +1,273 @@
+1.producer consumer in process synchronization
+
+import threading
+import time
+import random
+BUFFER_SIZE = 10
+buffer = [None] * BUFFER_SIZE
+in_index = 0
+out_index = 0
+# Semaphores and mutex
+empty = threading.Semaphore(BUFFER_SIZE)
+full = threading.Semaphore(0)
+mutex = threading.Lock()
+
+def producer():
+    global in_index
+    for _ in range(10):  # Produce 10 items
+        item = random.randint(1, 100)
+        empty.acquire()  # Wait for an empty slot
+        with mutex:
+            buffer[in_index] = item
+            print(f'Produced: {item}')
+            in_index = (in_index + 1) % BUFFER_SIZE
+        full.release()  # Signal that there is an item
+        time.sleep(random.random())  # Simulate production time
+    print("Producer finished producing.")
+def consumer():
+    global out_index
+    for _ in range(10):  # Consume 10 items
+        full.acquire()  # Wait for an item
+        with mutex:
+            item = buffer[out_index]
+            buffer[out_index] = None
+            print(f'Consumed: {item}')
+            out_index = (out_index + 1) % BUFFER_SIZE
+empty.release()  # Signal that there is an empty slot
+time.sleep(random.random())  # Simulate consumption time
+print("Consumer finished consuming.")
+
+if __name__ == "__main__":
+    producer_thread = threading.Thread(target=producer)
+    consumer_thread = threading.Thread(target=consumer)
+    producer_thread.start()
+    consumer_thread.start()
+    producer_thread.join()
+    consumer_thread.join()
+
+Description: The producer consumer problem is a classic synchronization issue in co-current program. It involves two types of process producer which generates the date and place it into a shared buffer and consumer which take date from the buffered for processing. The challenge lies in managing access to the buffer to prevent rays condition and insure Data integrity. If buffered in full producer must wait until space is full producer must wait until space is available.
+
+
+2.Swapping Numbers
+
+a = int(input("Enter the first number (a): "))
+b = int(input("Enter the second number (b): "))
+temp = a
+a = b
+b = temp
+print("After swapping:")
+print("a =", a)
+print("b =", b)
+
+Description: Swapping two numbers means exchanging their values. If you have two number say a and b, after swapping a will have value of B. This can be done using temporary variable to hold one value during the exchange or without a temporary variable using mathematical operations swapping number is a common task in programming to record values or variables.
+
+3.Finding largest number
+
+numbers = [12,9,20,5,11,29,22]
+largest_number = max(numbers)
+print("The largest number is:",largest_number)
+
+Description: Finding largest number in Python can be done using math() function which returns the biggest value from a list of numbers. The largest number in set of numbers is the value that is more than or equal to all other number in the set. This method is commonly used when working with databases to identify maximum values easily.
+
+4.Finding smallest number
+
+def smallest_number(numbers):
+    return min(numbers)
+
+numbers = [12,9,20,5,11,23,1]
+smallest_num = smallest_number(numbers)
+print("The smallest number is:", smallest_num)
+
+Description: Finding the smallest number in Python can be done using min() function, which returns the smallest value from a list of numbers. The smallest number in set of number is the value that is less than or equal to all other number in the set. This method commonly used when working with data set to identify minimum values easily.
+
+5.Lowercase to Upercase
+
+def Upper_case(input_string):
+    return input_string.upper()
+
+msg = input("Enter a string: ")
+upper_case = Upper_case(msg)
+print("Upper case string:", upper_case)  
+
+Description: To convert lower case to uppercase in Python, we use upper() method. This method is applied to string and converts all lowercase letters to uppercase. This transformation is commonly used for standardizing text ensuring consistency in data and simplifying text processing. The process ensures that text is uniform and easily comparable regardless of how it was originally entered.
+
+6. Bubble sort
+
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(n - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+numbers = [15,45,4,12,8,19]
+print("Original list:", numbers)
+
+bubble_sort(numbers)
+
+print("Sorted list:", numbers)
+
+
+Description: Bubble sort is a simple sorting algorithm used to arrange numbers in ascending order it works by repeatedly comparing adjacent elements in a list and swapping them if they are in wrong order this process repeats until no more swapping are needed meaning the list is fully sorted the largest element " bubble up" to the end of the list with each pass. Through easy to implement, bubble sort is inifficient for large data bases due to its time complexity of O(n^2).
+
+7.check positive or negative
+
+def check_number(num):
+    if num > 0:
+        return "The number is positive."
+    elif num < 0:
+        return "The number is negative."
+    else:
+        return "The number is zero."
+number = float(input("Enter a number: "))
+result = check_number(number)
+print(result)
+
+Description: To check if a number is positive or negative you simply compared to the zero if the number is greater than zero it's considered positive and its less than zero it's negative if the number equal 0 it's neither positive nor negative this is common check used in many programs to classify numbers based on their time
+
+8.Bounded Buffer Problem
+
+import threading
+import time
+import random
+from queue import Queue
+
+# Buffer size
+BUFFER_SIZE = 5
+# Number of items to produce and consume
+NUM_ITEMS = 10
+# Shared buffer
+buffer = Queue(maxsize=BUFFER_SIZE)
+
+# Producer function
+def producer():
+    for _ in range(NUM_ITEMS):
+        item = random.randint(1, 100)  # Produce an item (random number)
+        buffer.put(item)  # Add the item to the buffer
+        print(f"Produced: {item}")
+        time.sleep(random.uniform(0.5, 2))  # Simulate production time
+    print("Producer finished producing.")
+
+# Consumer function
+def consumer():
+    for _ in range(NUM_ITEMS):
+        item = buffer.get()  # Remove an item from the buffer
+        print(f"Consumed: {item}")
+        time.sleep(random.uniform(1, 3))  # Simulate consumption time
+    print("Consumer finished consuming.")
+
+if __name__ == "__main__":
+    # Create threads for producer and consumer
+    producer_thread = threading.Thread(target=producer)
+    consumer_thread = threading.Thread(target=consumer)
+
+    # Start the threads
+    producer_thread.start()
+    consumer_thread.start()
+
+    # Join the threads to ensure completion
+    producer_thread.join()
+    consumer_thread.join()
+
+    print("Producer and Consumer have completed their tasks.")
+
+Description: The bounded buffer problem also known as the producer consumer problem a producer and a consumer the producer ads item to the buffer and the consumer removes them the challenge is ensuring the producer doesn't add to a full buffer and the consumer doesn't remove from an Empty buffer proper synchronization typically using semaphores or locks, required to prevent race conditions and ensure data consistency, efficient handling of this condition ensures that the producer and consumer can work smoothly without waiting unnecessary optimizing the systems performance
+
+9. Sum of natural numbers
+
+def sum_of_natural_numbers(n):
+    return n * (n + 1) // 2
+n = int(input("Enter a positive integer: "))
+if n > 0:
+    total_sum = sum_of_natural_numbers(n)
+    print(f"The sum of the first {n} natural numbers is: {total_sum}")
+else:
+    print("Please enter a positive integer.")
+
+Description: To find the sum of natural numbers you can use the formula and(n+1)/2, where and is the highest natural number in the range. This formula quickly calculate the sum of all natural number from 1 to n. For example the sum of first five natural number (1,2,3,4,5) is 5**(5+1)/2 = 15. This method is efficient and avoid the need for interative summing.
+
+10.Reader-Writer problem
+
+import threading
+import time
+
+# Shared data and counters
+shared_data = 0
+read_count = 0
+
+# Locks for readers and writers
+read_lock = threading.Lock()
+write_lock = threading.Lock()
+
+def reader(id):
+    global read_count
+    for _ in range(5):
+        with read_lock:
+            if read_count == 0:
+                write_lock.acquire()
+            read_count += 1
+
+        # Reading data
+        print(f"Reader {id} reads: {shared_data}")
+        time.sleep(1)
+
+        with read_lock:
+            read_count -= 1
+            if read_count == 0:
+                write_lock.release()
+        
+        time.sleep(1) 
+    print(f"Reader {id} done.")
+
+def writer(id):
+    global shared_data
+    for _ in range(5):
+        write_lock.acquire()
+        shared_data += 1
+        print(f"Writer {id} writes: {shared_data}")
+        time.sleep(1)
+        write_lock.release()
+        time.sleep(1)
+    print(f"Writer {id} done.")
+
+if __name__ == "__main__":
+    threads = [threading.Thread(target=reader, args=(i,)) for i in range(2)] + \
+              [threading.Thread(target=writer, args=(i,)) for i in range(2)]
+
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+Description: The Reader-write problem involves managing access to a shared resource by multiple reader-and-writers. readers can access the resource co-currently as long as no writer are active, but writer need exclusive access. The challenge is to ensure that multiple readers can read simultaneously without interference, while ensuring that writers get exclusive access when needed. Proper synchronization mechanisms, like read-write locks, are used to manage access and prevent race conditions. The goal is to balance access so that readers do not block each, and writers can complete their task without necessary delays efficient solutions also prevent writer starvation where writers can perpetually delete by continuous reading operations
+
+11.: Copy file content
+
+def copy_file(src_file, dest_file):
+    try:
+        # Open source file in read mode and destination file in write mode
+        with open(src_file, 'r') as src:
+            with open(dest_file, 'w') as dest:
+                # Read content from the source file and write it to the destination file
+                content = src.read()
+                dest.write(content)
+        print(f"Content copied from {src_file} to {dest_file}.")
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+    except IOError as e:
+        print(f"Error: {e}")
+
+# Example usage
+source_file = 'source.txt'
+destination_file = 'destination.txt'
+copy_file(source_file, destination_file)
+
+Description:Copying file content involves reading data from source file and writing it into a destination file this process typically includes opening both files, reading the data from source file in chunks or all at once and then writing that data to destination file operations carefully to ensure that all data is copied accurately and efficiently. Error checking should be implemented to handle issues like file not found or read / write errors. This operation is commonly used in file management task and data migration. Insuring the integrity of the copy data and closing files properly after the operation is crucial for awarding data corruption.
+
+Lowercs to uppercase
+
+def lower_case(input_string):
+    return input_string.lower()
+
+msg = input("Enter a string: ")
+lower_case_string = lower_case(msg)
+print("Lower case string:", lower_case_string)
